@@ -2,10 +2,11 @@ import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from "./constants";
 import { Post } from "./entities/Post";
 import path from "path";
+import { User } from "./entities/User";
 
 // Tell TypeScript which variable is accept while passing it to MikroORM.init
 export default {
-    entities: [Post],
+    entities: [Post, User],
     dbName: 'lireddit',
     password: 'ngomyquynh',
     type: 'postgresql', // one of `mongo` | `mysql` | `mariadb` | `postgresql` | `sqlite`
