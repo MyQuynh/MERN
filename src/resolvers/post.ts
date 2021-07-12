@@ -59,10 +59,10 @@ export class PostResolver {
     async deletePost ( @Ctx() {em} : MyContext,
                 @Arg("id") id: number
     ): Promise<Boolean> {
-        const post = await em.findOne(Post,{id});
-        if (post!){
-            return false;
-        }
+        // const post = await em.findOne(Post,{id});
+        // if (post!){
+        //     return false;
+        // }
         await em.nativeDelete(Post, {id});
         return true;
 

@@ -53,10 +53,6 @@ let PostResolver = class PostResolver {
     }
     deletePost({ em }, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = yield em.findOne(Post_1.Post, { id });
-            if (post) {
-                return false;
-            }
             yield em.nativeDelete(Post_1.Post, { id });
             return true;
         });
