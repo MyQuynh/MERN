@@ -1,6 +1,6 @@
 import * as argon2 from "argon2";
 import { MyContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { User } from "../entities/User";
 
 @InputType()
@@ -33,6 +33,17 @@ class UserRespond {
 @Resolver()
 export class UserResolver {
 
+    @Query(()=> User)
+    async me (
+        @Ctx() {em, req} : MyContext,
+    ): Promise<User | null>{
+        if(!req.session.userId){
+            return null;
+        }
+        const user = await em.findOne(User, {id : req.session.userId});
+        return user;
+    } 
+
     @Mutation(()=> User)
     async createUser(
         @Ctx() {em} : MyContext,
@@ -41,12 +52,13 @@ export class UserResolver {
         const hashPassword = await argon2.hash(newUser.password);
         const user = em.create(User, {username: newUser.username, password: hashPassword});
         await em.persistAndFlush(user);
+
         return user;
     };
 
     @Mutation(()=> UserRespond)
     async login(
-        @Ctx() {em} : MyContext,
+        @Ctx() {em, req} : MyContext,
         @Arg("userInfo") newUser: UserNew
     ): Promise<UserRespond>{
         const user = await em.findOne(User, {username: newUser.username});
@@ -67,8 +79,13 @@ export class UserResolver {
                 }]
             }
         }
+
+        // Session to save for further login
+        req.session.userId = user.id;
         return {user,}
     };
+
+
 
 
 }
